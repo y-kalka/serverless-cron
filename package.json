@@ -19,7 +19,9 @@
     }
   },
   "scripts": {
-    "build": "tsup-node src/index.ts --dts --format esm,cjs --legacy-output --target es2017,node14 --minify --treeshake --clean --out-dir dist"
+    "build": "tsup-node src/index.ts --dts --format esm,cjs --legacy-output --target es2017,node14 --minify --treeshake --clean --out-dir dist",
+    "prepublish": "pnpm run build",
+    "postversion": "git push --follow-tags && pnpm publish"
   },
   "author": "",
   "license": "MIT",
