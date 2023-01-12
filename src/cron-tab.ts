@@ -11,7 +11,17 @@ interface CronTabOptions {
 }
 
 export class CronTab {
-	constructor(private jobs: CronJob[], private options: CronTabOptions) {}
+	constructor(private jobs: CronJob[], private options: CronTabOptions) {
+		const usedIds = new Set()
+
+		for (const job of jobs) {
+		  if(usedIds.has(job.id)){
+			throw Error(`Multiple jobs with the same id "${job.id}" detected`);
+		  }
+
+		  usedIds.add(job.id);
+		}
+	}
 
 	async run() {
 		const handler = [];
