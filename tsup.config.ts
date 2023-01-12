@@ -8,5 +8,5 @@ export default defineConfig({
   minify: true,
   treeshake: true,
   dts: true,
-  target: ["es2017"],
+  target: ["node14", "node16", "node18"],
 })
