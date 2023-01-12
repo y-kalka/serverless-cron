@@ -31,7 +31,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "cron-parser": "^4.0.0"
+    "cron-parser": "^4.7.1"
   },
   "devDependencies": {
     "tsup": "^6.5.0",
