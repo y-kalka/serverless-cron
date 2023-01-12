@@ -14,14 +14,14 @@ export class CronTab {
 	#jobs: CronJob[] = [];
 
 	constructor(jobs: CronJob[], private options: CronTabOptions) {
-		const usedIds = new Set()
+		const usedIds = new Set();
 
 		for (const job of jobs) {
-		  if(usedIds.has(job.id)){
-			throw Error(`Multiple jobs with the same id "${job.id}" detected`);
-		  }
+			if (usedIds.has(job.id)) {
+				throw Error(`Multiple jobs with the same id "${job.id}" detected`);
+			}
 
-		  usedIds.add(job.id);
+			usedIds.add(job.id);
 		}
 
 		this.#jobs = jobs;
@@ -37,7 +37,7 @@ export class CronTab {
 			const lastRun = cronStates.find((state) => state.id === job.id)?.lastRun;
 			const interval = parseExpression(job.cronTime, {
 				currentDate: lastRun || undefined,
-				tz: this.options.timeZone || undefined
+				tz: this.options.timeZone || undefined,
 			});
 			let nextRun = new Date();
 
@@ -54,9 +54,13 @@ export class CronTab {
 							await job.handler();
 							await this.options.store.setLastRun(job.id, NOW);
 							this.options.onComplete?.(job.id, interval.next().toDate());
+
+							return { jobId: job.id, status: 'success' };
+
 							// eslint-disable-next-line no-empty
 						} catch (error) {
 							this.options.onError?.(job.id, error);
+							return { jobId: job.id, status: 'failed', error };
 						}
 					})()
 				);
