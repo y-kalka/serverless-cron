@@ -11,7 +11,9 @@ interface CronTabOptions {
 }
 
 export class CronTab {
-	constructor(private jobs: CronJob[], private options: CronTabOptions) {
+	#jobs: CronJob[] = [];
+
+	constructor(jobs: CronJob[], private options: CronTabOptions) {
 		const usedIds = new Set()
 
 		for (const job of jobs) {
@@ -21,6 +23,8 @@ export class CronTab {
 
 		  usedIds.add(job.id);
 		}
+
+		this.#jobs = jobs;
 	}
 
 	async run() {
@@ -29,7 +33,7 @@ export class CronTab {
 		const NOW = new Date();
 		const NOW_TIMESTAMP = NOW.getTime();
 
-		for (const job of this.jobs) {
+		for (const job of this.#jobs) {
 			const lastRun = cronStates.find((state) => state.id === job.id)?.lastRun;
 			const interval = parseExpression(job.cronTime, {
 				currentDate: lastRun || undefined,
