@@ -9,7 +9,7 @@
     "schedule"
   ],
   "main": "./dist/index.js",
-  "module": "./dist/esm/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -19,12 +19,12 @@
   "exports": {
     ".": {
       "require": "./dist/index.js",
-      "import": "./dist/esm/index.js",
+      "import": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsup-node src/index.ts --dts --format esm,cjs --legacy-output --target es2017,node14 --minify --treeshake --clean --out-dir dist",
+    "build": "tsup-node src/index.ts --dts --format esm,cjs --target es2017,node14 --minify --treeshake --clean --out-dir dist",
     "prepublish": "pnpm run build",
     "postversion": "git push --follow-tags && pnpm publish"
   },
