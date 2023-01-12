@@ -24,7 +24,7 @@
     }
   },
   "scripts": {
-    "build": "tsup-node src/index.ts --dts --format esm,cjs --target es2017,node14 --minify --treeshake --clean --out-dir dist",
+    "build": "tsup-node",
     "prepublish": "pnpm run build",
     "postversion": "git push --follow-tags && pnpm publish"
   },
