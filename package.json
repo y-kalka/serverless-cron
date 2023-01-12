@@ -1,0 +1,37 @@
+{
+  "name": "serverless-cron",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "serverless",
+    "cron",
+    "scheduler",
+    "schedule"
+  ],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.mjs",
+      "types": "./dist/types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "rm -rf dist/* && npm run build:esbuild:cjs && npm run build:esbuild:esm && npm run build:tsc:types",
+    "build:esbuild:cjs": "esbuild src/index.ts --format=cjs --platform=node --target=es2015,node14 --bundle --minify --packages=external --outfile=dist/cjs/index.js",
+    "build:esbuild:esm": "esbuild src/index.ts --format=esm --platform=node --target=es2020,node14 --bundle --minify --packages=external --outfile=dist/esm/index.mjs",
+    "build:esbuild:deno": "esbuild src/index.ts --format=esm --target=es2020,deno1 --bundle --minify --sourcemap --outfile=mod.js",
+    "build:tsc:types": "tsc --outDir dist/types --declaration --emitDeclarationOnly"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "cron-parser": "^4.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.16.17",
+    "typescript": "^4.9.4"
+  }
+}
