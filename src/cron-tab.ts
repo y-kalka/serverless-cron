@@ -1,4 +1,4 @@
-import { parseExpression } from 'cron-parser';
+import cronParser from 'cron-parser';
 import type { CronJob } from './cron-job';
 import type { StateStore } from './state-store';
 
@@ -35,7 +35,7 @@ export class CronTab {
 
 		for (const job of this.#jobs) {
 			const lastRun = cronStates.find((state) => state.id === job.id)?.lastRun;
-			const interval = parseExpression(job.cronTime, {
+			const interval = cronParser.parseExpression(job.cronTime, {
 				currentDate: lastRun || undefined,
 				tz: this.options.timeZone || undefined,
 			});
