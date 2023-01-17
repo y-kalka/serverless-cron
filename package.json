@@ -1,6 +1,6 @@
 {
 	"name": "serverless-cron",
-	"version": "1.0.0-alpha2",
+	"version": "1.0.0-alpha3",
 	"description": "",
 	"engines": {
 		"node": ">=14.0.0"
