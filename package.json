@@ -28,7 +28,8 @@
 		"build": "tsup-node",
 		"prepublish": "pnpm run build",
 		"postversion": "git push --follow-tags && pnpm publish",
-		"fmt": "prettier -w ."
+		"fmt": "prettier -w .",
+		"test": "vitest"
 	},
 	"author": "",
 	"license": "MIT",
@@ -38,6 +39,7 @@
 	"devDependencies": {
 		"prettier": "^2.8.2",
 		"tsup": "^6.5.0",
-		"typescript": "^4.9.4"
+		"typescript": "^4.9.4",
+		"vitest": "^0.28.3"
 	}
 }

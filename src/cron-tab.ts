@@ -3,7 +3,11 @@ import type { CronJob } from './cron-job';
 import type { StateStore } from './state-store';
 
 interface CronTabOptions {
-	timeZone?: string;
+	/**
+	 * @description
+	 * Sets the current date to determine which jobs have to run. Currently used for tests
+	 */
+	currentDate?: Date;
 	onError?: (jobId: string, error: unknown) => void;
 	onStart?: (jobId: string) => void;
 	onComplete?: (jobId: string, next: Date) => void;
@@ -37,14 +41,13 @@ export class CronTab {
 		const response: CronResponse[] = [];
 		const tasks = [];
 		const cronStates = await this.options.store.getAll();
-		const NOW = new Date();
+		const NOW = this.options.currentDate || new Date();
 		const NOW_TIMESTAMP = NOW.getTime();
 
 		for (const job of this.#jobs) {
 			const lastRun = cronStates.find((state) => state.id === job.id)?.lastRun;
 			const interval = cronParser.parseExpression(job.cronTime, {
 				currentDate: lastRun || undefined,
-				tz: this.options.timeZone || undefined,
 			});
 			let nextRun = new Date();
 
