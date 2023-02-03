@@ -10,6 +10,12 @@ interface CronTabOptions {
 	store: StateStore;
 }
 
+interface CronResponse {
+	id: string;
+	next: Date;
+	state: 'skipped' | 'failed' | 'successful';
+}
+
 export class CronTab {
 	#jobs: CronJob[] = [];
 
@@ -27,8 +33,9 @@ export class CronTab {
 		this.#jobs = jobs;
 	}
 
-	async run() {
-		const handler = [];
+	async run(): Promise<CronResponse[]> {
+		const response: CronResponse[] = [];
+		const tasks = [];
 		const cronStates = await this.options.store.getAll();
 		const NOW = new Date();
 		const NOW_TIMESTAMP = NOW.getTime();
@@ -47,7 +54,7 @@ export class CronTab {
 			}
 
 			if (nextRun.getTime() <= NOW_TIMESTAMP) {
-				handler.push(
+				tasks.push(
 					(async () => {
 						try {
 							this.options.onStart?.(job.id);
@@ -55,18 +62,33 @@ export class CronTab {
 							await this.options.store.setLastRun(job.id, NOW);
 							this.options.onComplete?.(job.id, interval.next().toDate());
 
-							return { jobId: job.id, status: 'success' };
-
-							// eslint-disable-next-line no-empty
+							response.push({
+								id: job.id,
+								next: interval.next().toDate(),
+								state: 'successful',
+							});
 						} catch (error) {
 							this.options.onError?.(job.id, error);
-							return { jobId: job.id, status: 'failed', error };
+
+							response.push({
+								id: job.id,
+								next: interval.next().toDate(),
+								state: 'failed',
+							});
 						}
 					})()
 				);
+			} else {
+				response.push({
+					id: job.id,
+					next: nextRun,
+					state: 'skipped',
+				});
 			}
 		}
 
-		await Promise.all(handler);
+		await Promise.all(tasks);
+
+		return response;
 	}
 }
