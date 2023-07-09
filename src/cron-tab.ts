@@ -1,6 +1,6 @@
-import cronParser from 'cron-parser';
-import type { CronJob } from './cron-job';
-import type { StateStore } from './state-store';
+import cronParser from "cron-parser";
+import type { CronJob } from "./cron-job";
+import type { StateStore } from "./state-store";
 
 interface CronTabOptions {
 	/**
@@ -17,7 +17,7 @@ interface CronTabOptions {
 interface CronResponse {
 	id: string;
 	next: Date;
-	state: 'skipped' | 'failed' | 'successful';
+	state: "skipped" | "failed" | "successful";
 }
 
 export class CronTab {
@@ -46,7 +46,7 @@ export class CronTab {
 
 		for (const job of this.#jobs) {
 			const lastRun = cronStates.find((state) => state.id === job.id)?.lastRun;
-			const interval = cronParser.parseExpression(job.cronTime, {
+			const interval = cronParser.parseExpression(job.cron, {
 				currentDate: lastRun || undefined,
 			});
 			let nextRun = new Date();
@@ -63,20 +63,41 @@ export class CronTab {
 							this.options.onStart?.(job.id);
 							await job.handler();
 							await this.options.store.setLastRun(job.id, NOW);
-							this.options.onComplete?.(job.id, interval.next().toDate());
+
+							try {
+								this.options.onComplete?.(job.id, interval.next().toDate());
+							} catch (onSuccessError) {
+								const newError = new Error("Your onComplete handler failed", {
+									cause: onSuccessError,
+								});
+
+								newError.cause = console.error();
+
+								console.error(newError);
+							}
 
 							response.push({
 								id: job.id,
 								next: interval.next().toDate(),
-								state: 'successful',
+								state: "successful",
 							});
 						} catch (error) {
-							this.options.onError?.(job.id, error);
+							try {
+								this.options.onError?.(job.id, error);
+							} catch (onErrorError) {
+								const newError = new Error("Your onError handler failed", {
+									cause: onErrorError,
+								});
+
+								newError.cause = console.error();
+
+								console.error(newError);
+							}
 
 							response.push({
 								id: job.id,
 								next: interval.next().toDate(),
-								state: 'failed',
+								state: "failed",
 							});
 						}
 					})()
@@ -85,7 +106,7 @@ export class CronTab {
 				response.push({
 					id: job.id,
 					next: nextRun,
-					state: 'skipped',
+					state: "skipped",
 				});
 			}
 		}

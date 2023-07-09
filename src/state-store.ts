@@ -1,4 +1,4 @@
-interface CronState {
+export interface CronState {
 	id: string;
 	lastRun?: Date | undefined | null;
 }

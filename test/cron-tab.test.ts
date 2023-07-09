@@ -1,14 +1,15 @@
-import { expect, test } from 'vitest';
-import { CronTab } from '../src/cron-tab';
+import { expect, test } from "vitest";
+import { CronJob } from "../src/cron-job";
+import { CronTab } from "../src/cron-tab";
 
-test('Skip cronjobs', async () => {
+test("Skip cronjobs", async () => {
 	const crontab = new CronTab(
-		[{ id: '1', cronTime: '* * * * *', async handler() {} }],
+		[new CronJob({ id: "1", cronTime: "* * * * *", async handler() {} })],
 		{
-			currentDate: new Date('2023-02-03T09:23:07.299Z'),
+			currentDate: new Date("2023-02-03T09:23:07.299Z"),
 			store: {
 				getAll() {
-					return [{ id: '1', lastRun: new Date('2023-02-03T09:23:00.000Z') }];
+					return [{ id: "1", lastRun: new Date("2023-02-03T09:23:00.000Z") }];
 				},
 				setLastRun(id, date) {},
 			},
@@ -16,18 +17,18 @@ test('Skip cronjobs', async () => {
 	);
 
 	await expect(crontab.run()).resolves.toEqual([
-		{ id: '1', state: 'skipped', next: new Date('2023-02-03T09:24:00.000Z') },
+		{ id: "1", state: "skipped", next: new Date("2023-02-03T09:24:00.000Z") },
 	]);
 });
 
-test('Execute cronjobs', async () => {
+test("Execute cronjobs", async () => {
 	const crontab = new CronTab(
-		[{ id: '1', cronTime: '* * * * *', async handler() {} }],
+		[new CronJob({ id: "1", cronTime: "* * * * *", async handler() {} })],
 		{
-			currentDate: new Date('2023-02-03T09:23:07.299Z'),
+			currentDate: new Date("2023-02-03T09:23:07.299Z"),
 			store: {
 				getAll() {
-					return [{ id: '1', lastRun: new Date('2023-02-03T09:22:00.000Z') }];
+					return [{ id: "1", lastRun: new Date("2023-02-03T09:22:00.000Z") }];
 				},
 				setLastRun(id, date) {},
 			},
@@ -36,29 +37,29 @@ test('Execute cronjobs', async () => {
 
 	await expect(crontab.run()).resolves.toEqual([
 		{
-			id: '1',
-			state: 'successful',
-			next: new Date('2023-02-03T09:24:00.000Z'),
+			id: "1",
+			state: "successful",
+			next: new Date("2023-02-03T09:24:00.000Z"),
 		},
 	]);
 });
 
-test('Fail cronjobs', async () => {
+test("Fail cronjobs", async () => {
 	const crontab = new CronTab(
 		[
-			{
-				id: '1',
-				cronTime: '* * * * *',
+			new CronJob({
+				id: "1",
+				cronTime: "* * * * *",
 				async handler() {
-					throw Error('Test error');
+					throw Error("Test error");
 				},
-			},
+			}),
 		],
 		{
-			currentDate: new Date('2023-02-03T09:23:07.299Z'),
+			currentDate: new Date("2023-02-03T09:23:07.299Z"),
 			store: {
 				getAll() {
-					return [{ id: '1', lastRun: new Date('2023-02-03T09:22:00.000Z') }];
+					return [{ id: "1", lastRun: new Date("2023-02-03T09:22:00.000Z") }];
 				},
 				setLastRun(id, date) {},
 			},
@@ -67,9 +68,9 @@ test('Fail cronjobs', async () => {
 
 	await expect(crontab.run()).resolves.toEqual([
 		{
-			id: '1',
-			state: 'failed',
-			next: new Date('2023-02-03T09:24:00.000Z'),
+			id: "1",
+			state: "failed",
+			next: new Date("2023-02-03T09:24:00.000Z"),
 		},
 	]);
 });
