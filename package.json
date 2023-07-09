@@ -26,8 +26,8 @@
 	},
 	"scripts": {
 		"build": "tsup-node",
-		"prepublish": "pnpm run build",
-		"postversion": "git push --follow-tags && pnpm publish",
+		"prepublish": "npm run build",
+		"postversion": "git push --follow-tags && npm publish",
 		"fmt": "prettier -w .",
 		"test": "vitest"
 	},
